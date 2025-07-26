@@ -1,1 +1,0 @@
-# technic-test-back-end
