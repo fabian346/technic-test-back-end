@@ -6,5 +6,5 @@ public interface IInventoryService {
 
     InventoryResponse getInventoryByProductId(Long productId);
 
-    void updateQuantity(Long productId, Integer quantity);
+    void updateAmount(Long productId, Integer quantity);
 }

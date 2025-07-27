@@ -1,14 +1,8 @@
 package com.technicTestBackEnd.api.model.responses.product;
 
-import lombok.*;
-
 import java.math.BigDecimal;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@Data
-@EqualsAndHashCode
+
 public class ProductResponse {
     private Long id;
     private String name;

@@ -1,17 +1,9 @@
 package com.technicTestBackEnd.api.model.entities.inventory;
 
 import jakarta.persistence.*;
-import lombok.*;
 
 import java.io.Serializable;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-@EqualsAndHashCode
-@Data
 @Entity
 @Table(name = "inventory")
 public class Inventory implements Serializable {
@@ -25,4 +17,28 @@ public class Inventory implements Serializable {
 
     @Column(nullable = false)
     private Integer amount;
+
+    public Long getProductId() {
+        return productId;
+    }
+
+    public void setProductId(Long productId) {
+        this.productId = productId;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Integer getAmount() {
+        return amount;
+    }
+
+    public void setAmount(Integer amount) {
+        this.amount = amount;
+    }
 }

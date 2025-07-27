@@ -24,7 +24,7 @@ public class InventoryController {
 
     @PutMapping("/{productId}")
     public ResponseEntity<Void> updateQuantity(@PathVariable Long productId, @RequestParam Integer quantity) {
-        inventoryService.updateQuantity(productId, quantity);
+        inventoryService.updateAmount(productId, quantity);
         return ResponseEntity.noContent().build();
     }
 }

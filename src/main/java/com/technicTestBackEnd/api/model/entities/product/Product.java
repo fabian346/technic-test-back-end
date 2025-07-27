@@ -1,16 +1,10 @@
 package com.technicTestBackEnd.api.model.entities.product;
 
 import jakarta.persistence.*;
-import lombok.*;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-@EqualsAndHashCode
-@Data
 @Entity
 @Table(name = "product")
 public class Product implements Serializable {
