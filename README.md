@@ -1,6 +1,6 @@
 # Technic Test Back-End
 
-Este proyecto contiene dos microservicios: **Productos** e **Inventario**, desarrollados con **Java 8**, **Spring Boot**, y base de datos **Oracle**. Los servicios están diseñados para demostrar habilidades en desarrollo de API RESTful, pruebas unitarias y consumo entre microservicios.
+Este proyecto contiene dos microservicios: **Productos**, **Inventario** e **Compra** desarrollados con **Java 17**, **Spring Boot**, y base de datos **Oracle**. Los servicios están diseñados para demostrar habilidades en desarrollo de API RESTful, pruebas unitarias y consumo entre microservicios.
 
 ---
 
@@ -10,6 +10,7 @@ Este proyecto contiene dos microservicios: **Productos** e **Inventario**, desar
 technic-test-back-end/
 ├── inventario/           → Microservicio de Inventario
 ├── productos/            → Microservicio de Productos
+├── compra/               → Microservicio de compra
 ├── README.md             → Este archivo
 ```
 
@@ -30,7 +31,6 @@ technic-test-back-end/
 - Spring Data JPA
 - Oracle DB
 - JUnit 5 / Mockito para pruebas
-- Lombok
 
 ---
 
@@ -80,8 +80,8 @@ spring.jpa.database-platform=org.hibernate.dialect.Oracle10gDialect
 
 - Consultar cantidad de un producto (consulta el microservicio de productos)
 - Actualizar cantidad disponible
-- *(Opcional)* Registrar historial de compras
-- *(Opcional)* Emitir eventos cuando cambia el inventario
+- Registrar historial de compras
+- Emitir eventos cuando cambia el inventario
 
 ---
 
@@ -106,6 +106,17 @@ mvn spring-boot:run
 http://localhost:8080/api/product
 http://localhost:8081/api/inventario
 ```
+🔁 Tolerancia a fallos
+
+Tiempo de espera configurable (3 segundos por defecto)
+
+Reintento simple de hasta 3 veces al consultar otro servicio
+
+📝 Documentación OpenAPI (Swagger UI)
+
+Disponible en:
+
+http://localhost:8080/swagger-ui/index.html#/ → Microservicios
 
 ---
 
@@ -118,6 +129,50 @@ mvn test
 ```
 
 ---
+🧾 Flujo de Compra (Orquestado desde Inventario)
+
+El cliente llama al endpoint de compra en Inventario (/purchase).
+
+Inventario consulta vía HTTP al microservicio de Productos para validar existencia.
+
+Si el producto existe y hay stock suficiente:
+
+Actualiza la cantidad en inventario
+
+Registra en el historial
+
+Emite un evento (opcional)
+
+Devuelve la información de la compra
+
+Si hay error (no existe, sin stock): se retorna el mensaje correspondiente.
+
+🗃️ Arquitectura y Diagrama
+
+🔗 Diagrama de Interacción
+
+sequenceDiagram
+participant Cliente
+participant Inventario
+participant Productos
+
+    Cliente->>Inventario: POST /purchase
+    Inventario->>Productos: GET /products/{id} (con API Key)
+    Productos-->>Inventario: Datos del producto
+    Inventario->>Inventario: Verifica stock
+    Inventario->>Inventario: Actualiza stock
+    Inventario->>Historial: Guarda compra
+    Inventario-->>Cliente: Resultado de la compra
+
+🏗️ Estructura de Carpetas (Simplificada)
+
+technic-test-back-end/
+├── product-service/
+│   └── src/main/java/.../controller, service, model, repository
+├── inventory-service/
+│   └── src/main/java/.../controller, service, model, repository
+
+
 
 ## 📬 Notas Finales
 

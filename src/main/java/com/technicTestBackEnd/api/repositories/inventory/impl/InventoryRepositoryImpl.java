@@ -16,6 +16,12 @@ public class InventoryRepositoryImpl implements IInventoryRepositoryCustom {
 
     @Override
     public Inventory findByProductId(Long productId) {
-        return null;
+
+        return iInventoryRepository.getReferenceById(productId);
+    }
+
+    @Override
+    public void save(Inventory inventory) {
+        iInventoryRepository.save(inventory);
     }
 }

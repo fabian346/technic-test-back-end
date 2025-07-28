@@ -1,9 +1,11 @@
 package com.technicTestBackEnd.api.services.inventory.impl;
 
+import com.technicTestBackEnd.api.events.InventoryEventPublisher;
 import com.technicTestBackEnd.api.model.entities.inventory.Inventory;
 import com.technicTestBackEnd.api.model.responses.inventory.InventoryResponse;
 import com.technicTestBackEnd.api.model.responses.product.ProductResponse;
 import com.technicTestBackEnd.api.repositories.inventory.impl.IInventoryRepositoryCustom;
+import com.technicTestBackEnd.api.repositories.purchasehistory.iml.IPurchaseHistoryRepoCustom;
 import com.technicTestBackEnd.api.services.inventory.IInventoryService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -15,13 +17,19 @@ public class InventoryService implements IInventoryService {
 
     private final IInventoryRepositoryCustom inventoryRepositoryCustom;
 
+    private final InventoryEventPublisher eventPublisher;
+
+    private final IPurchaseHistoryRepoCustom purchaseHistoryRepoCustom;
+
     private final RestTemplate restTemplate;
 
     @Value("${product.service.url}")
     private String productServiceUrl;
 
-    public InventoryService(IInventoryRepositoryCustom inventoryRepositoryCustom, RestTemplate restTemplate) {
+    public InventoryService(IInventoryRepositoryCustom inventoryRepositoryCustom, InventoryEventPublisher eventPublisher, IPurchaseHistoryRepoCustom purchaseHistoryRepoCustom, RestTemplate restTemplate) {
         this.inventoryRepositoryCustom = inventoryRepositoryCustom;
+        this.eventPublisher = eventPublisher;
+        this.purchaseHistoryRepoCustom = purchaseHistoryRepoCustom;
         this.restTemplate = restTemplate;
     }
 
@@ -31,7 +39,7 @@ public class InventoryService implements IInventoryService {
 
         Inventory inventory = inventoryRepositoryCustom.findByProductId(productId);
 
-        if (inventory == null) {
+        if (inventory != null) {
             throw new RuntimeException("Product not found in inventory");
         }
 
@@ -60,7 +68,7 @@ public class InventoryService implements IInventoryService {
 
         Inventory inventory = inventoryRepositoryCustom.findByProductId(productId);
 
-        if (inventory == null) {
+        if (inventory != null) {
             inventory = new Inventory();
             inventory.setProductId(productId);
             inventory.setAmount(amount);
@@ -70,5 +78,7 @@ public class InventoryService implements IInventoryService {
 
         inventoryRepositoryCustom.save(inventory);
 
+        /* emitir evento */
+        eventPublisher.publishInventoryChangeEvent(productId, inventory.getAmount());
     }
 }
